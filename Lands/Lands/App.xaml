@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Application xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:infra="clr-namespace:Lands.Infrastructure"
+             mc:Ignorable="d"
+             x:Class="Lands.App">
+    <Application.Resources>
+        <!--Se creo una propiedad personalizada llamada infra, hace referencia a la carpeta Infrastructure y su contenido -->
+       <!--AQUI INICIA LA APLICACION SE LLAMA DICCIRONADRIO DE RECURSOS-->
+        <!--Aplication resource dictionary-->
+        <ResourceDictionary>
+            <!--decimos que hay un objeto de la clase infra que es de la clase InstanceLocator que se llama Locator su funcion es ligar la mainviewmodel con las views-->
+            <infra:InstanceLocator x:Key="Locator"/>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>
