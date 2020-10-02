@@ -48,7 +48,7 @@ namespace Lands.Models
 
         [JsonProperty(PropertyName = "gini")]
         public double? Gini { get; set; }
-
+        //double? se vuelve nulable
         [JsonProperty(PropertyName = "timezones")]
         public List<string> Timezones { get; set; }
 

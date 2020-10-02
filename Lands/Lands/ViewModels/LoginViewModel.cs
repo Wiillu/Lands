@@ -123,7 +123,7 @@ namespace Lands.ViewModels
             
             //1. se debe instanciar la view model, para ser referenciada; Se usa el patron singleton y evitar multiples instancias(MainViewModel) 
             MainViewModel.GetInstance().Lands = new LandsViewModel();
-            //2. Se apila con método asincrono
+            //2. Se apila con método asincrono para navegacion
             await Application.Current.MainPage.Navigation.PushAsync(new LandsPage());
 
 

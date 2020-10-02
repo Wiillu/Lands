@@ -11,7 +11,7 @@ namespace Lands.ViewModels
 
     public class LandsViewModel : BaseViewModel
     {
-        #region Services
+        #region Services 
         private ApiService apiService;
         #endregion
 
@@ -31,6 +31,7 @@ namespace Lands.ViewModels
         #region Constructors
         public LandsViewModel()
         { 
+            //instnaciamos el servicio en el constructor
             this.apiService = new ApiService();
             this.LoadLands();
         }
@@ -39,17 +40,32 @@ namespace Lands.ViewModels
         #region Methods
         private async void LoadLands()
         {
+
+            var connection = await this.apiService.CheckConnection();
+            if(!connection.IsSuccess)
+            {
+                await Application.Current.MainPage.DisplayAlert(
+                    "error", 
+                    connection.Message, 
+                    "Acept");
+                //navegación hacía atras
+                await Application.Current.MainPage.Navigation.PopAsync();
+                return;
+            }
+            //asincrono await con el servicio del metodo y le pasamos las variables
             var response = await this.apiService.GetList<Land>(
                 "https://restcountries.eu",
                 "/rest",
                 "/v2/all");
+            //verifica si sucedio
             if(!response.IsSuccess)
             {
                 await Application.Current.MainPage.DisplayAlert("error", response.Message, "Acept");
                 return;
             }
-
+            //castea como lista desde el resultado de la respuesta
             var list = (List<Land>) response.Result;
+            //envia la lista a la coleccion
             this.Lands = new ObservableCollection<Land>(list);
         }
         #endregion

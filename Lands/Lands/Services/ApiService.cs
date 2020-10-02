@@ -12,7 +12,7 @@ namespace Lands.Services
 {
     public class ApiService
     {
-        /*public async Task<Response> CheckConnection()
+        public async Task<Response> CheckConnection()
         {
         //revisal la conexion del telefono
             if (!CrossConnectivity.Current.IsConnected)
@@ -23,7 +23,7 @@ namespace Lands.Services
                     Message = "Please turn on your internet settings.",
                 };
             }
-            //verifica el internet del telefono
+            //verifica el internet del telefono haciendo ping a google
             var isReachable = await CrossConnectivity.Current.IsRemoteReachable(
                 "google.com");
             if (!isReachable)
@@ -40,7 +40,7 @@ namespace Lands.Services
                 IsSuccess = true,
                 Message = "Ok",
             };
-        }*/
+        }
 
         public async Task<TokenResponse> GetToken(
             string urlBase,
@@ -128,7 +128,7 @@ namespace Lands.Services
                 var url = string.Format("{0}{1}", servicePrefix, controller);
                 var response = await client.GetAsync(url);
                 var result = await response.Content.ReadAsStringAsync();
-
+                //devuelve respuesta
                 if (!response.IsSuccessStatusCode)
                 {
                     return new Response
@@ -156,7 +156,7 @@ namespace Lands.Services
             }
         }
 
-        /*public async Task<Response> GetList<T>(
+        public async Task<Response> GetList<T>(
             string urlBase,
             string servicePrefix,
             string controller,
@@ -198,7 +198,7 @@ namespace Lands.Services
                     Message = ex.Message,
                 };
             }
-        }*/
+        }
 
         public async Task<Response> GetList<T>(
             string urlBase,
