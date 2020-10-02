@@ -44,10 +44,10 @@ namespace Lands.Models
         public string Demonym { get; set; }
 
         [JsonProperty(PropertyName = "area")]
-        public double Area { get; set; }
+        public double? Area { get; set; }
 
         [JsonProperty(PropertyName = "gini")]
-        public double Gini { get; set; }
+        public double? Gini { get; set; }
 
         [JsonProperty(PropertyName = "timezones")]
         public List<string> Timezones { get; set; }

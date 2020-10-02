@@ -6,6 +6,7 @@ namespace Lands.Models
 {
     public class Response
     {
+        //Respuesta de servicios
         public bool IsSuccess
         {
             get;

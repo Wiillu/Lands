@@ -6,7 +6,8 @@ namespace Lands.Models
 using Newtonsoft.Json;
 using System;
 public class TokenResponse
-    {
+    { 
+        //token de segurirdad
         #region Properties
         [JsonProperty(PropertyName = "access_token")]
         public string AccessToken { get; set; }
