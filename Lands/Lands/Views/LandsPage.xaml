@@ -21,7 +21,7 @@
             </SearchBar>
             <!--*
             HasUnevenRows=Rellena los nombres en otra lína
-            IsPullToRefreshEnabled-habilita el refresh
+            IsPullToRefreshEnabled-habilita el refreshs
             IsRefreshing activa el refresh-->
             <ListView
                 BackgroundColor="Silver"
