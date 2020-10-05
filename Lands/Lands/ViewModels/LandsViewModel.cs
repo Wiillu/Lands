@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Xamarin.Forms;
 using Lands.Services;
+using System.Windows.Input;
+using GalaSoft.MvvmLight.Command;
+using System.Linq;
 
 namespace Lands.ViewModels
 {
@@ -13,11 +16,16 @@ namespace Lands.ViewModels
     {
         #region Services 
         private ApiService apiService;
+       
         #endregion
 
         #region Attributes
         /*Genera una lista cambiante*/
         private ObservableCollection<Land> lands;
+        private bool isRefreshing;
+        private string filter;
+        // se guarda para no volver a enviar a la rest
+        private List<Land> landsList;
         #endregion
 
         #region Properties
@@ -25,6 +33,20 @@ namespace Lands.ViewModels
         {
             get { return this.lands; }
             set { SetValue(ref this.lands, value); }
+        }
+        public bool IsRefreshing
+        {
+            get { return this.isRefreshing; }
+            set { SetValue(ref this.isRefreshing, value); }
+        }
+        public string Filter
+        {
+            get { return this.filter; }
+            set { SetValue(
+                ref this.filter, value);
+                //cada vez que haya un cambio buscar
+                this.Search();
+            }
         }
         #endregion
 
@@ -38,12 +60,14 @@ namespace Lands.ViewModels
         #endregion
 
         #region Methods
+        //asincrono debido a que se usa una api
         private async void LoadLands()
         {
-
+            this.IsRefreshing = true;
             var connection = await this.apiService.CheckConnection();
             if(!connection.IsSuccess)
             {
+                this.IsRefreshing = false;
                 await Application.Current.MainPage.DisplayAlert(
                     "error", 
                     connection.Message, 
@@ -60,14 +84,51 @@ namespace Lands.ViewModels
             //verifica si sucedio
             if(!response.IsSuccess)
             {
+                this.IsRefreshing = false;
                 await Application.Current.MainPage.DisplayAlert("error", response.Message, "Acept");
                 return;
             }
+            this.IsRefreshing = false;
             //castea como lista desde el resultado de la respuesta
-            var list = (List<Land>) response.Result;
+            //var list = (List<Land>) response.Result;
+            this.landsList= (List<Land>)response.Result; //la almacena en memoria la lista original
             //envia la lista a la coleccion
-            this.Lands = new ObservableCollection<Land>(list);
+            this.Lands = new ObservableCollection<Land>(this.landsList);
         }
+        private void Search()
+        {
+            if (string.IsNullOrEmpty(this.Filter))
+            {
+                this.Lands = new ObservableCollection<Land>(this.landsList);//carga la lista original
+            }
+            else
+            { //ToLower minuscula
+                this.Lands = new ObservableCollection<Land>(
+                    this.landsList.Where(
+                        l => l.Name.ToLower().Contains(this.Filter.ToLower()) ||
+                        l.Capital.ToLower().Contains(this.Filter.ToLower())
+                        ));
+            }
+        }
+        #endregion
+        #region Commands
+        public ICommand RefreshCommand
+        {
+            get
+            {
+                //carga el metodo que se usara al refrescar
+                return new RelayCommand(LoadLands);
+            }
+        }
+
+        public ICommand SearchCommand
+        {
+            get
+            {
+                return new RelayCommand(Search);
+            }
+        }
+
         #endregion
 
     }
