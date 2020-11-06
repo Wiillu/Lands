@@ -78,5 +78,8 @@ namespace Lands.Models
 
         [JsonProperty(PropertyName = "cioc")]
         public string Cioc { get; set; }
+
+        
+        
     }
 }

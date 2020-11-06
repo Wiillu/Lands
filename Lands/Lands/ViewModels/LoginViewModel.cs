@@ -1,7 +1,9 @@
 ﻿using GalaSoft.MvvmLight.Command;
+using Lands.Services;
 using Lands.Views;
 using System.Windows.Input;
 using Xamarin.Forms;
+using Lands.Helpers;
 
 namespace Lands.ViewModels
 {
@@ -10,6 +12,10 @@ namespace Lands.ViewModels
     public class LoginViewModel : BaseViewModel
     {
         //ctrl + k + s añade regiónn
+
+        #region Services
+        private ApiService apiService;
+        #endregion
 
         #region Attributes
         //solo los atributos dependientes a refresecar se ingresan
@@ -54,10 +60,11 @@ namespace Lands.ViewModels
         #region Constructor
         public LoginViewModel()
         {
+            this.apiService = new ApiService();
             this.IsRemembered = true;
             this.IsEnabled = true;
-            this.Email = "jzuluaga55@gmail.com";
-            this.Password = "1234";
+            /*this.Email = "wilithosan@gmail.com";
+            this.Password = "123456";*/
         }
         #endregion
         #region Commands
@@ -81,9 +88,9 @@ namespace Lands.ViewModels
                 //await obligado para asincrono, obliga a esperar a la aplicación
                 //Application libreria xamarin forms. se conecta con la aplicación
                 await Application.Current.MainPage.DisplayAlert(
-                    "Error",
-                    "You must enter an email",
-                    "Accept");
+                    Languages.Error,
+                    Languages.EmailValidation,
+                    Languages.Accept);
                 return;
             }
             //evalua variables IsNullOrEmpty
@@ -101,7 +108,7 @@ namespace Lands.ViewModels
             this.IsRunning = true;
             this.IsEnabled = false;
 
-            if (this.Email != "jzuluaga55@gmail.com" || this.Password != "1234")
+            /*if (this.Email != "jzuluaga55@gmail.com" || this.Password != "1234")
             {
                 this.IsRunning = false;
                 this.IsEnabled = true;
@@ -112,20 +119,65 @@ namespace Lands.ViewModels
                 //vacia el campo de password
                 this.Password = string.Empty;
                 return;
+            }*/
+            var connection = await this.apiService.CheckConnection();
+            if (!connection.IsSuccess)
+            {
+                this.IsRunning = false;
+                this.IsEnabled = true;
+                await Application.Current.MainPage.DisplayAlert(
+                    Languages.Error,
+                    connection.Message,
+                    "Accept");
+                //vacia el campo de password
+                return;
             }
+            var token = await this.apiService.GetToken("http://10.10.10.182:9090/", this.Email, this.Password);
+            if(token == null)
+            {
+                this.IsRunning = false;
+                this.IsEnabled = true;
+                await Application.Current.MainPage.DisplayAlert(
+                   "Error",
+                   "Something was wrong, please try again",
+                   "Accept");
+            }
+            
+            if(string.IsNullOrEmpty(token.AccessToken))
+            {
+                this.IsRunning = false;
+                this.IsEnabled = true;
+                await Application.Current.MainPage.DisplayAlert(
+                    "Error",
+                    token.ErrorDescription,
+                    "Accept");
+                this.Password = string.Empty;
+                return;
+            }
+
+            var mainViewModel = MainViewModel.GetInstance();
+            mainViewModel.Token = token.AccessToken;
+            mainViewModel.TokenType = token.TokenType;
+            if(this.IsRemembered)
+            {
+                Settings.Token = token.AccessToken;
+                Settings.TokenType = token.TokenType;
+            }
+
+
+            //1. se debe instanciar la view model, para ser referenciada; Se usa el patron singleton y evitar multiples instancias(MainViewModel) 
+            mainViewModel.Lands = new LandsViewModel();
+            //2. Se apila con método asincrono para navegacion
+            //await Application.Current.MainPage.Navigation.PushAsync(new LandsPage());
+            Application.Current.MainPage = new MasterPage();//no activa el push
+
 
             this.IsRunning = false;
             this.IsEnabled = true;
-            
+
             //limpia los campos
             this.Email = string.Empty;
             this.Password = string.Empty;
-            
-            //1. se debe instanciar la view model, para ser referenciada; Se usa el patron singleton y evitar multiples instancias(MainViewModel) 
-            MainViewModel.GetInstance().Lands = new LandsViewModel();
-            //2. Se apila con método asincrono para navegacion
-            await Application.Current.MainPage.Navigation.PushAsync(new LandsPage());
-
 
         }
         #endregion

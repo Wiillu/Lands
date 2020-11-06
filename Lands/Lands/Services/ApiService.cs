@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Lands.Models;
 using Newtonsoft.Json;
 using Plugin.Connectivity;
-
+using Lands.Domain; //trae la clase response
 namespace Lands.Services
 {
     public class ApiService

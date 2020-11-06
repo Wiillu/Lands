@@ -1,4 +1,4 @@
-﻿using System;
+﻿/*using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -24,4 +24,6 @@ namespace Lands.Models
             set;
         }
     }
-}
+}*/
+/*se usara la del domian haciendola trasversal
+ */

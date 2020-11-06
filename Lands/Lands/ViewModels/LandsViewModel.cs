@@ -21,15 +21,15 @@ namespace Lands.ViewModels
 
         #region Attributes
         /*Genera una lista cambiante*/
-        private ObservableCollection<Land> lands;
+        private ObservableCollection<LandItemViewModel> lands;
         private bool isRefreshing;
         private string filter;
         // se guarda para no volver a enviar a la rest
-        private List<Land> landsList;
+        //private List<Land> landsList;
         #endregion
 
         #region Properties
-        public ObservableCollection<Land> Lands
+        public ObservableCollection<LandItemViewModel> Lands
         {
             get { return this.lands; }
             set { SetValue(ref this.lands, value); }
@@ -59,7 +59,7 @@ namespace Lands.ViewModels
         }
         #endregion
 
-        #region Methods
+        #region Constructors
         //asincrono debido a que se usa una api
         private async void LoadLands()
         {
@@ -91,24 +91,44 @@ namespace Lands.ViewModels
             this.IsRefreshing = false;
             //castea como lista desde el resultado de la respuesta
             //var list = (List<Land>) response.Result;
-            this.landsList= (List<Land>)response.Result; //la almacena en memoria la lista original
+            //this.landsList= (List<Land>)response.Result; //la almacena en memoria la lista original
+            MainViewModel.GetInstance().LandsList = (List<Land>)response.Result; 
             //envia la lista a la coleccion
-            this.Lands = new ObservableCollection<Land>(this.landsList);
+            this.Lands = new ObservableCollection<LandItemViewModel>(
+                this.ToLandItemViewModel());
         }
-        private void Search()
+        #endregion
+
+        #region Methods
+        private IEnumerable<LandItemViewModel> ToLandItemViewModel()
         {
-            if (string.IsNullOrEmpty(this.Filter))
+            return MainViewModel.GetInstance().LandsList.Select(l => new LandItemViewModel
             {
-                this.Lands = new ObservableCollection<Land>(this.landsList);//carga la lista original
-            }
-            else
-            { //ToLower minuscula
-                this.Lands = new ObservableCollection<Land>(
-                    this.landsList.Where(
-                        l => l.Name.ToLower().Contains(this.Filter.ToLower()) ||
-                        l.Capital.ToLower().Contains(this.Filter.ToLower())
-                        ));
-            }
+                Alpha2Code = l.Alpha2Code,
+                Alpha3Code = l.Alpha3Code,
+                AltSpellings = l.AltSpellings,
+                Area = l.Area,
+                Borders = l.Borders,
+                CallingCodes = l.CallingCodes,
+                Capital = l.Capital,
+                Cioc = l.Cioc,
+                Currencies = l.Currencies,
+                Demonym = l.Demonym,
+                Flag = l.Flag,
+                Gini = l.Gini,
+                Languages = l.Languages,
+                Latlng = l.Latlng,
+                Name = l.Name,
+                NativeName = l.NativeName,
+                NumericCode = l.NumericCode,
+                Population = l.Population,
+                Region = l.Region,
+                RegionalBlocs = l.RegionalBlocs,
+                Subregion = l.Subregion,
+                Timezones = l.Timezones,
+                TopLevelDomain = l.TopLevelDomain,
+                Translations = l.Translations,
+            });
         }
         #endregion
         #region Commands
@@ -129,6 +149,22 @@ namespace Lands.ViewModels
             }
         }
 
+        private void Search()
+        {
+            if (string.IsNullOrEmpty(this.Filter))
+            {
+                this.Lands = new ObservableCollection<LandItemViewModel>(
+                    this.ToLandItemViewModel());//carga la lista original
+            }
+            else
+            { //ToLower minuscula
+                this.Lands = new ObservableCollection<LandItemViewModel>(
+                     this.ToLandItemViewModel().Where(
+                        l => l.Name.ToLower().Contains(this.Filter.ToLower()) ||
+                        l.Capital.ToLower().Contains(this.Filter.ToLower())
+                        ));
+            }
+        }
         #endregion
 
     }
